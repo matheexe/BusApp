@@ -1,0 +1,11 @@
+{
+    "java.fx.sceneBuilderPath": "C:\\SceneBuilder\\SceneBuilder.exe",
+    "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-24",
+    "java.project.sourcePaths": [ // Adding all Java files in "lib" to classpath
+        "." 
+    ],
+    
+    "java.project.referencedLibraries": [
+        "lib/*.jar"
+    ]
+}
