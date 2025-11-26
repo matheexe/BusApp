@@ -1,4 +1,5 @@
 package src;
+
 import java.util.*; // Importing all util packages
 import java.util.List; // Importing List from util package
 import java.awt.*; // Importing all AWT packages 
@@ -11,12 +12,25 @@ import javafx.stage.Stage; // Importing JavaFX classes
 
 public class BusApp extends Application{ // Main class extending Application for JavaFX
 
-    @Override 
-    public void start(Stage stage) throws Exception{ // Stage is the main window
-        Parent root = FXMLLoader.load(getClass().getResource("BusView.fxml"));
+    @Override public void start(Stage stage) throws Exception { 
+        // 1. Criar o carregador
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("BusView.fxml"));
+        
+        // 2. Carregar a hierarquia (View)
+        Parent root = loader.load();
 
-        stage.setTitle("BusApp");
-        stage.setScene(new Scene(root, 600, 400)); // Setting the scene to the stage
+        // 3. Pegar o Controller que o FXML criou automaticamente
+        BusController controller = loader.getController();
+
+        // 4. Criar os dados reais (O Ônibus Principal)
+        Bus meuOnibus = new Bus("VIACAO-JAVA", 40, "São Paulo", "Curitiba", "14:30");
+        
+        // 5. PASSAR os dados para o controller (A PONTE!)
+        controller.setBusData(meuOnibus);
+
+        // Configuração padrão do palco
+        stage.setTitle("BusApp - Sistema de Reservas");
+        stage.setScene(new Scene(root, 1280, 720)); 
         stage.show(); 
     }
 
@@ -25,8 +39,7 @@ public class BusApp extends Application{ // Main class extending Application for
         launch(); 
     }
 
-// function to test bus logic //
-// Uncomment to run the test //
+// Function to test bus logic //
     public static void testBusLogic() {
         System.out.println("--- Iniciando Teste de Reserva ---");
         
@@ -34,9 +47,9 @@ public class BusApp extends Application{ // Main class extending Application for
         Bus bus = new Bus("BUS-TESTE", 2, "São Paulo", "Rio de Janeiro", "10:00");
         
         // 2. Criar 3 passageiros
-        Passenger p1 = new Passenger("Ana");
-        Passenger p2 = new Passenger("Bruno");
-        Passenger p3 = new Passenger("Carlos");
+        Passenger p1 = new Passenger("Ana Silva", "123.456.789-00", 30, "ana@email.com"); 
+        Passenger p2 = new Passenger("Luiz Santos", "987.654.321-00", 45, "luiz@email.com"); 
+        Passenger p3 = new Passenger("Maria Oliveira", "111.222.333-44", 22, "maria@email.com"); 
 
         // 3. Tentar reservar assentos
     System.out.println("Tentando reservar para Ana:");
@@ -56,8 +69,6 @@ public class BusApp extends Application{ // Main class extending Application for
     }
 }
 
-
-
 // Lista para fazer:
 // - Implementar funcionalidades para reservar, cancelar e verificar status de passagens | Maro menos pronta (funciona no console só)
 // - Adicionar interface gráfica para interação do usuário | Em andamento
@@ -71,22 +82,34 @@ public class BusApp extends Application{ // Main class extending Application for
 // - Exibir informações completas de uma viagem (ônibus, origem, destino, horários, capacidade, reservas confirmadas, check-ins realizados) | Em andamento
 // - Exibir passageiros de uma viagem com status: pendente, confirmado, check-in | Parcialmente pronta (console)
 
-enum State{
-    PENDING, // Passenger has requested for ticket
-    CONFIRMED, // Admin has confirmed the ticket
-    CHECKIN, // Passenger has enterred the bus
-    AWAITING // Trip is waiting to start
+enum State {
+    PENDING,     
+    CONFIRMED,   
+    CHECKEDIN,
+    AWAITING,  
+    CANCELED,  
 }
 
 class Passenger{
-    String name; //Passenger's name
-    State state; // Passenger's current state
-    int seat; // Passenger's seat number
+    public String name;
+    public String cpf;
+    public int age;
+    public String email;
+    public State state; 
+    public int seat; 
 
-    public Passenger(String name){
+    public Passenger(String name, String cpf, int age, String email) { 
         this.name = name;
-        this.state = State.PENDING; // Initial state is PENDING
-        this.seat = -1; // Initial seat number is -1 (not assigned)
+        this.cpf = cpf;
+        this.age = age;
+        this.email = email;
+        this.state = State.PENDING; 
+        this.seat = -1; 
+    }
+    
+    @Override
+    public String toString() {
+        return "Nome: " + name + ", Assento: " + (seat == -1 ? "N/A" : seat) + ", Status: " + state;
     }
 }
 
