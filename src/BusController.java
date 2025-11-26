@@ -2,7 +2,12 @@ package src;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
+
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -34,31 +39,49 @@ public class BusController {
     // ----------------------------------------------------
     // [1] Reservar Viagem (Usa a Fila)
     // ----------------------------------------------------
+
     @FXML
     public void handleBookTrip(ActionEvent event) {
-        System.out.println("\n--- [1] NOVA RESERVA (PENDENTE) ---");
-        System.out.print("Nome: ");
-        String name = scanner.nextLine();
-        System.out.print("CPF: ");
-        String cpf = scanner.nextLine();
-        System.out.print("Idade: ");
-        int age = scanner.nextInt();
-        scanner.nextLine(); 
-        System.out.print("E-mail válido: ");
-        String email = scanner.nextLine();
-        
-        // Simples validação de capacidade para evitar fila desnecessária
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ReserveTrip.fxml"));
+            Parent root = loader.load();
 
-        Passenger p = new Passenger(name, cpf, age, email);
-        System.out.println("✅ Reserva de " + name + " na FILA de espera. Status: PENDING.");
+            ReserveTripController controller = loader.getController();
+            controller.setBus(currentBus); // send nested Bus object
+
+            Stage stage = new Stage();
+            stage.setTitle("New Trip Reservation");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ----------------------------------------------------
-    // [2] Processar Reservas (Admin - Remove da Fila, Adiciona à Lista)
+    // [2] Process Pending Reservations (Admin)
     // ----------------------------------------------------
+
     @FXML
-    public void handleReservation(ActionEvent event) { 
-        System.out.println("\n--- [2] PROCESSANDO RESERVAS PENDENTES (Admin) ---");
+    public void handleProcessReservations(ActionEvent event) {
+        System.out.println("\n--- [2] PROCESSING PENDING RESERVATIONS (Admin) ---");
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ProcessReservations.fxml"));
+            Parent root = loader.load();
+
+            ProcessReservationsController controller = loader.getController();
+            controller.setBus(currentBus);
+
+            Stage stage = new Stage();
+            stage.setTitle("Process Reservations");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ----------------------------------------------------

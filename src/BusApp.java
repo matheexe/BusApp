@@ -31,7 +31,7 @@ public class BusApp extends Application{ // Main class extending Application for
         // Configuração padrão do palco
         stage.setTitle("BusApp - Sistema de Reservas");
         stage.setScene(new Scene(root, 1280, 720)); 
-        stage.show(); 
+        stage.show();
     }
 
     public static void main(String[] args){ // Main method
@@ -87,15 +87,15 @@ enum State {
     CONFIRMED,   
     CHECKEDIN,
     AWAITING,  
-    CANCELED,  
+    CANCELED
 }
 
 class Passenger{
     public String name;
     public String cpf;
-    public int age;
     public String email;
     public State state; 
+    public int age;
     public int seat; 
 
     public Passenger(String name, String cpf, int age, String email) { 
@@ -125,67 +125,177 @@ class Driver{
     }
 }
 
-class Bus{
-    String busNumber; // Bus number
-    String origin; // Origin of the bus
-    String destination; // Destination of the bus
-    String departureTime; // Departure time of the bus
-    List<Passenger> passengers; // List of passengers
-    int capacity; // Bus capacity
+class Bus {
 
-    public Bus(String busNumber, int capacity, String origin, String destination, String departureTime){
+    String busNumber;
+    String origin;
+    String destination;
+    String departureTime;
+    int capacity;
+
+    // Confirmed passengers
+    List<Passenger> passengers = new ArrayList<>();
+
+    // Pending reservations
+    Queue<Passenger> pendingReservations = new LinkedList<>();
+
+    // Stack for check-in
+    Stack<Passenger> checkInStack = new Stack<>();
+
+    // Vector for seats
+    Passenger[] seats;
+
+    public Bus(String busNumber, int capacity, String origin, String destination, String departureTime) {
         this.busNumber = busNumber;
         this.capacity = capacity;
         this.origin = origin;
         this.destination = destination;
         this.departureTime = departureTime;
-        this.passengers = new ArrayList<>();
+        this.seats = new Passenger[capacity];
     }
 
-    public boolean bookSeat(Passenger passenger){
-        if(passengers.size() >= capacity) {
-            System.out.println(" No seats available.");
-            return false; // No seats available
-        }
-
-        passenger.seat = passengers.size() + 1;
-        passenger.state = State.CONFIRMED;
-        passengers.add(passenger);
-        System.out.println(" Seat booked successfully for " + passenger.name + " at seat number " + passenger.seat);
-        return true; // Seat booked successfully   
-    }   
-
-    public boolean cancelSeat(Passenger passenger) {
-        if (passengers.contains(passenger)) {
-            passengers.remove(passenger);
-            passenger.seat = -1;
+    // ---------------------------------------------------
+    // 1. BOOK TRIP  (Confirm or add to pending queue)
+    // ---------------------------------------------------
+    public boolean bookSeat(Passenger passenger) {
+        // If seats are full → add to pending queue
+        if (passengers.size() >= capacity) {
             passenger.state = State.PENDING;
-            System.out.println(" Seat cancellation successful for " + passenger.name);
-            return true;
-        }
-        else{
-            System.out.println(" No booking found for " + passenger.name);
+            pendingReservations.add(passenger);
+            System.out.println("No seats available. Added to pending reservations.");
             return false;
         }
+
+        // Confirm reservation
+        passenger.seat = passengers.size() + 1;
+        passenger.state = State.CONFIRMED;
+        seats[passenger.seat - 1] = passenger;
+        passengers.add(passenger);
+
+        System.out.println("Seat booked for " + passenger.name + " (Seat " + passenger.seat + ")");
+        return true;
     }
 
-    public void displayTripInfo(){
-        System.out.println("\n--- Trip Details ---");
-        System.out.println("Bus Number: " + busNumber);
-        System.out.println("Route: " + origin + " -> " + destination);
-        System.out.println("Departure Time: " + departureTime);
-        System.out.println("Ocupation: " + passengers.size() + "/" + capacity);
+    // ---------------------------------------------------
+    // 2. PROCESS NEXT PENDING RESERVATION (Queue → Seat)
+    // ---------------------------------------------------
+    public Passenger processNextReservation() {
+        if (pendingReservations.isEmpty()) return null;
+        if (passengers.size() >= capacity) return null;
+
+        Passenger p = pendingReservations.poll();
+
+        p.seat = passengers.size() + 1;
+        p.state = State.CONFIRMED;
+
+        seats[p.seat - 1] = p;
+        passengers.add(p);
+
+        return p;
     }
 
-    public void listPassengers(){
-        System.out.println("\n--- Passenger List ---");
-        if (passengers.isEmpty()) {
-            System.out.println("No passengers booked.");
-        }
-        else{
-            for (Passenger p : passengers) {
-                System.out.println("Name: " + p.name + ", Seat: " + p.seat + ", Status: " + p.state);
+    // ---------------------------------------------------
+    // 3. CHECK-IN (Stack)
+    // ---------------------------------------------------
+    public boolean checkInPassenger(String cpf) {
+        for (Passenger p : passengers) {
+            if (p.cpf.equals(cpf)) {
+                if (p.state == State.CHECKEDIN) return false;
+                p.state = State.CHECKEDIN;
+                checkInStack.push(p);
+                return true;
             }
+        }
+        return false;
+    }
+
+    // ---------------------------------------------------
+    // 4. CHANGE SEAT
+    // ---------------------------------------------------
+    public boolean changeSeat(String cpf, int newSeat) {
+        if (newSeat < 1 || newSeat > capacity) return false;
+        if (seats[newSeat - 1] != null) return false;
+
+        for (Passenger p : passengers) {
+            if (p.cpf.equals(cpf)) {
+                seats[p.seat - 1] = null;
+                p.seat = newSeat;
+                seats[newSeat - 1] = p;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ---------------------------------------------------
+    // 5. CANCEL RESERVATION
+    // ---------------------------------------------------
+    public boolean cancelReservation(String cpf) {
+        for (Passenger p : passengers) {
+            if (p.cpf.equals(cpf)) {
+
+                seats[p.seat - 1] = null;
+                passengers.remove(p);
+                p.state = State.CANCELED;
+                p.seat = -1;
+
+                // Try processing pending
+                if (!pendingReservations.isEmpty()) {
+                    processNextReservation();
+                }
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ---------------------------------------------------
+    // 6. SHOW AVAILABLE TRIPS
+    // ---------------------------------------------------
+    public boolean isAvailable() {
+        return passengers.size() < capacity;
+    }
+
+    // ---------------------------------------------------
+    // 7. SHOW SOLD-OUT TRIPS
+    // ---------------------------------------------------
+    public boolean isSoldOut() {
+        return passengers.size() >= capacity;
+    }
+
+    // ---------------------------------------------------
+    // 8. LIST PENDING RESERVATIONS
+    // ---------------------------------------------------
+    public List<Passenger> getPendingReservations() {
+        return new ArrayList<>(pendingReservations);
+    }
+
+    // ---------------------------------------------------
+    // 9. SHOW FULL TRIP DETAILS
+    // ---------------------------------------------------
+    public void printTripDetails() {
+        System.out.println("Bus: " + busNumber);
+        System.out.println("Route: " + origin + " → " + destination);
+        System.out.println("Departure: " + departureTime);
+        System.out.println("Capacity: " + capacity);
+        System.out.println("Confirmed: " + passengers.size());
+        System.out.println("Check-ins: " + checkInStack.size());
+        System.out.println("Pending: " + pendingReservations.size());
+    }
+
+    public void displayTripInfo() {
+        System.out.println("----- TRIP INFO -----");
+        System.out.println("Destination: " + destination);
+        System.out.println("Origin: " + origin);
+        System.out.println("Capacity: " + capacity);
+        System.out.println("Reserved seats: " + passengers.size()); 
+    }
+
+    public void listPassengers() {
+        System.out.println("----- PASSENGERS -----");
+        for (Passenger p : passengers) { 
+            System.out.println(p.name + " - " + p.cpf); 
         }
     }
 }

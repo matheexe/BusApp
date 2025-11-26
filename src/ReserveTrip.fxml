@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="src.ReserveTripController"
+            prefWidth="400" prefHeight="350">
+
+    <children>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <children>
+
+                <Label text="Book a Trip" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <TextField fx:id="inputName" promptText="Full name"/>
+                <TextField fx:id="inputCPF" promptText="Document ID"/>
+                <TextField fx:id="inputAge" promptText="Age"/>
+                <TextField fx:id="inputEmail" promptText="Email"/>
+
+                <Button text="Confirm reservation" onAction="#handleConfirm"/>
+
+                <Label fx:id="labelStatus" text="" style="-fx-text-fill: green;"/>
+            </children>
+        </VBox>
+    </children>
+
+</AnchorPane>
