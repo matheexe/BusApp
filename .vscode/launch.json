@@ -8,6 +8,13 @@
             "type": "java",
             "name": "BusApp",
             "request": "launch",
+            "mainClass": "app.BusApp",
+            "projectName": "avaliacao-produto"
+        },
+        {
+            "type": "java",
+            "name": "BusApp",
+            "request": "launch",
             "mainClass": "src.BusApp",
             "projectName": "AvaliaçãoDeProduto2",
             "vmArgs": "-Dprism.order=sw --enable-native-access=javafx.graphics --module-path \"${workspaceFolder}/lib\" --add-modules javafx.controls,javafx.fxml"

@@ -1,0 +1,35 @@
+.background{
+    -fx-background-color: #09151b;
+}
+
+.titleLabel{
+    -fx-font-family: "Open Sans", sans-serif;
+    -fx-text-fill: #e5f2f6;
+    -fx-fill: #e5f2f6;
+}
+
+.sideMenu{
+    -fx-spacing: 10px;
+    -fx-background-radius: 16px;
+    -fx-border-radius: 8px;
+}
+
+.menuBtn{
+    -fx-text-fill: #e5f2f6;
+    -fx-background-color: #6f4fc2;
+    -fx-background-radius: 8px;
+}
+
+.menuBtn:hover{
+    -fx-background-color: #6f4fc2cc;
+}
+
+.btnExit{
+    -fx-background-color: #c23b22;
+}
+
+.btnExit:hover{
+    -fx-background-color: #c23b22cc;
+}
+
+
