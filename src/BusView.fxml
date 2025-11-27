@@ -85,13 +85,6 @@
                      <font>
                         <Font name="Open Sans Semibold" size="12.0" />
                      </font></Button>
-                  <Button fx:id="btnPending" alignment="CENTER" mnemonicParsing="false" onAction="#handlePending" prefHeight="90.0" prefWidth="202.0" styleClass="menuBtn" stylesheets="@style.css" text="CHECK PENDING RESERVATIONS">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                     <font>
-                        <Font name="Open Sans Semibold" size="12.0" />
-                     </font></Button>
                   <Button fx:id="btnDetails" alignment="CENTER" mnemonicParsing="false" onAction="#handleDetails" prefHeight="90.0" prefWidth="202.0" styleClass="menuBtn" stylesheets="@style.css" text="VIEW TRIP DETAILS">
                      <cursor>
                         <Cursor fx:constant="HAND" />

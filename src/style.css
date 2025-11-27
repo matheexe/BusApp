@@ -4,6 +4,7 @@
 
 .titleLabel{
     -fx-font-family: "Open Sans", sans-serif;
+    -fx-text-fill: #e5f2f6;
     -fx-fill: #e5f2f6;
 }
 
@@ -30,3 +31,5 @@
 .btnExit:hover{
     -fx-background-color: #c23b22cc;
 }
+
+

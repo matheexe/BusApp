@@ -1,7 +1,10 @@
 package src;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.Node;
+import javafx.stage.Stage;
 
 public class ReserveTripController {
 
@@ -34,7 +37,9 @@ public class ReserveTripController {
                 labelStatus.setText("Reservation completed!");
                 labelStatus.setStyle("-fx-text-fill: green;");
             } else {
-                labelStatus.setText("No seats available!");
+                // O bookSeat agora imprime a razão da falha no console,
+                // mas aqui você pode dar um status genérico para o GUI:
+                labelStatus.setText("Reservation failed.");
                 labelStatus.setStyle("-fx-text-fill: red;");
             }
 
@@ -42,5 +47,14 @@ public class ReserveTripController {
             labelStatus.setText("Error: invalid or missing information.");
             labelStatus.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    @FXML
+    public void handleExit1(ActionEvent event) {
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
+            
+        System.out.println("Reservation window closed.");
     }
 }
