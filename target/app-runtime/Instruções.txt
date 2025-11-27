@@ -1,0 +1,5 @@
+# Comando de Execução:
+
+1 - Descompactar o arquivo avaliacao-produto-runtime-image.zip em uma pasta.
+2 -Entrar na subpasta bin.
+3 - Executar o arquivo BusApp.bat ou BusApp.
